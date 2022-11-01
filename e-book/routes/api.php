@@ -21,18 +21,31 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::get('me', [AuthController::class, 'me']);
+//public routes
 
-// Route::get('books', [BookController::class, 'index']);
-// Route::get('books/{id}', [BookController::class, 'show']);
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+//Route::get('me', [AuthController::class, 'me']);
+Route::get('/books', [BookController::class, 'index']);
+Route::get('/books/{id}', [BookController::class, 'show']);
+Route::get('/authors', [AuthorController::class, 'index']);
+Route::get('/authors/{id}', [AuthorController::class, 'show']);
+
 // Route::post('books', [BookController::class, 'store']);
 // Route::put('books/{id}', [BookController::class, 'update']);
 // Route::delete('books{id}', [BookController::class, 'destroy']);
 
-Route::resource('books', BookController::class)->except(
-    ['create', 'edit']
-);
 
-Route::resource('authors', AuthorController::class)->except(
-    ['create', 'edit']
-);
+//protected routes ->melewati middleware sunctum
+Route::middleware('auth:sanctum')->group(function (){
+    Route::resource('books', BookController::class)->except(
+        ['create', 'edit', 'index', 'show']
+    );
+
+    Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::resource('authors', AuthorController::class)->except(
+        ['create', 'edit', 'index', 'show']
+    );
+});
